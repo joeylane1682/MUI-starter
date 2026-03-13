@@ -1,0 +1,171 @@
+import React, { useRef, useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
+import Grid from "@mui/material/Grid";
+import type { LayoutNode } from "./layoutTypes";
+import type { ComputedLayoutMap } from "./layoutTypes";
+import {
+  layoutNodeToYogaNode,
+  computeLayout,
+  getComputedLayoutMap,
+} from "./yogaAdapter";
+
+const MUI_MAP: Record<LayoutNode["type"], React.ElementType> = {
+  page: Box,
+  section: Box,
+  container: Container,
+  stack: Stack,
+  grid: Grid,
+  component: Box,
+};
+
+interface LayoutRendererProps {
+  node: LayoutNode;
+  computedMap: ComputedLayoutMap;
+}
+
+/**
+ * Renders a single layout node with MUI (Box, Container, Stack, Grid) using Yoga-computed layout.
+ * container -> Container, stack -> Stack, grid -> Grid, generic -> Box.
+ */
+function LayoutNodeView({ node, computedMap }: LayoutRendererProps): React.ReactElement {
+  const computed = computedMap[node.id];
+  const children = node.children ?? [];
+  const MuiComponent = MUI_MAP[node.type];
+
+  const layoutSx = computed
+    ? {
+      position: "absolute" as const,
+      left: computed.left,
+      top: computed.top,
+      width: computed.width,
+      height: computed.height,
+      boxSizing: "border-box" as const,
+      border: "1px solid",
+      borderColor: "divider",
+    }
+    : {};
+
+  const childElements = children.map((child) => (
+    <LayoutNodeView key={child.id} node={child} computedMap={computedMap} />
+  ));
+
+  return <MuiComponent sx={layoutSx}>{childElements}</MuiComponent>;
+}
+
+interface LayoutRendererRootProps {
+  tree: LayoutNode;
+  computedMap: ComputedLayoutMap;
+}
+
+/**
+ * Root wrapper: holds the layout tree with position relative so root node is the containing block.
+ */
+export function LayoutRenderer({ tree, computedMap }: LayoutRendererRootProps): React.ReactElement {
+  const rootComputed = computedMap[tree.id];
+  const rootSx = rootComputed
+    ? {
+        position: "relative" as const,
+        width: rootComputed.width,
+        height: rootComputed.height,
+        minHeight: "100vh",
+      }
+    : {};
+
+  return (
+    <Box sx={rootSx}>
+      <LayoutNodeView node={tree} computedMap={computedMap} />
+    </Box>
+  );
+}
+
+interface LayoutViewProps {
+  tree: LayoutNode;
+  width: number;
+  height: number;
+}
+
+/**
+ * Runs the full pipeline: build Yoga tree → computeLayout → getComputedLayoutMap → render.
+ * Use when you have a known width/height (e.g. from a container ref).
+ * On Yoga load/layout failure, shows an error message instead of white-screen.
+ */
+export function LayoutView({ tree, width, height }: LayoutViewProps): React.ReactElement | null {
+  const [computedMap, setComputedMap] = useState<ComputedLayoutMap | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    setError(null);
+    let yogaRoot: ReturnType<typeof layoutNodeToYogaNode> | null = null;
+    try {
+      yogaRoot = layoutNodeToYogaNode(tree);
+      computeLayout(yogaRoot, width, height);
+      setComputedMap(getComputedLayoutMap(tree, yogaRoot));
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error(String(e)));
+      setComputedMap(null);
+    } finally {
+      yogaRoot?.freeRecursive();
+    }
+  }, [tree, width, height]);
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          p: 2,
+          color: "error.main",
+          bgcolor: "error.light",
+          border: "1px solid",
+          borderColor: "error.main",
+          borderRadius: 1,
+        }}
+      >
+        Layout failed: {error.message}
+      </Box>
+    );
+  }
+  if (computedMap == null) return null;
+  return <LayoutRenderer tree={tree} computedMap={computedMap} />;
+}
+
+interface LayoutViewWithRefProps {
+  tree: LayoutNode;
+}
+
+/**
+ * Measures a container via ref, then runs the layout pipeline and renders.
+ * Use as the root layout component in the app.
+ */
+function getViewportSize(): { width: number; height: number } {
+  if (typeof window === "undefined") return { width: 800, height: 600 };
+  return { width: window.innerWidth, height: window.innerHeight };
+}
+
+/**
+ * Measures a container via ref, then runs the layout pipeline and renders.
+ * Initial size is full viewport (100vw × 100vh); ResizeObserver keeps it in sync.
+ */
+export function LayoutViewWithRef({ tree }: LayoutViewWithRefProps): React.ReactElement {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState(getViewportSize);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => {
+      setSize({ width: el.offsetWidth, height: el.offsetHeight });
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <Box ref={containerRef} sx={{ width: "100vw", height: "100vh", overflow: "auto" }}>
+      <LayoutView tree={tree} width={size.width} height={size.height} />
+    </Box>
+  );
+}

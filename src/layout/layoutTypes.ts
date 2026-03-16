@@ -1,8 +1,4 @@
-/**
- * Typed layout tree schema.
- * JSON-serializable, single source of truth for layout.
- * MUI mapping (later): container -> Container/Box, stack -> Stack, grid -> Grid, generic -> Box.
- */
+//LayoutType defines the available node types and node spec (page, section, grid) and 
 
 export type LayoutNodeType =
   | "page"
@@ -23,12 +19,24 @@ export interface LayoutSpec {
   gap?: number;
   alignItems?: "flex-start" | "center" | "flex-end" | "stretch" | "baseline";
   justifyContent?:
-    | "flex-start"
-    | "center"
-    | "flex-end"
-    | "space-between"
-    | "space-around"
-    | "space-evenly";
+  | "flex-start"
+  | "center"
+  | "flex-end"
+  | "space-between"
+  | "space-around"
+  | "space-evenly";
+  /** Flex grow factor; children with flexGrow share remaining space. */
+  flexGrow?: number;
+  /** Fixed width (px). */
+  width?: number;
+  /** Fixed height (px). */
+  height?: number;
+  /** Min width (px). */
+  minWidth?: number;
+  /** Min height (px). */
+  minHeight?: number;
+  /** Flex wrap for grid-like layouts. */
+  flexWrap?: "nowrap" | "wrap" | "wrap-reverse";
 }
 
 /** Optional breakpoint-keyed overrides for future responsive behavior. */

@@ -1,9 +1,11 @@
+//YOGA TRANSLATION AND ENGINE
 import Yoga, {
   FlexDirection,
   Edge,
   Align,
   Justify,
   Gutter,
+  Wrap,
 } from "yoga-layout";
 import type {
   LayoutNode,
@@ -12,6 +14,7 @@ import type {
 } from "./layoutTypes";
 import type { Node as YogaNode } from "yoga-layout";
 
+//Convert layout spec into yoga properties
 function applyLayoutSpec(yogaNode: YogaNode, spec: LayoutSpec | undefined): void {
   if (!spec) return;
 
@@ -56,12 +59,32 @@ function applyLayoutSpec(yogaNode: YogaNode, spec: LayoutSpec | undefined): void
     };
     yogaNode.setJustifyContent(map[spec.justifyContent] ?? Justify.FlexStart);
   }
+  if (spec.flexGrow != null) {
+    yogaNode.setFlexGrow(spec.flexGrow);
+  }
+  if (spec.width != null) {
+    yogaNode.setWidth(spec.width);
+  }
+  if (spec.height != null) {
+    yogaNode.setHeight(spec.height);
+  }
+  if (spec.minWidth != null) {
+    yogaNode.setMinWidth(spec.minWidth);
+  }
+  if (spec.minHeight != null) {
+    yogaNode.setMinHeight(spec.minHeight);
+  }
+  if (spec.flexWrap) {
+    const map: Record<string, number> = {
+      nowrap: Wrap.NoWrap,
+      wrap: Wrap.Wrap,
+      "wrap-reverse": Wrap.WrapReverse,
+    };
+    yogaNode.setFlexWrap(map[spec.flexWrap] ?? Wrap.NoWrap);
+  }
 }
 
-/**
- * Converts a layout tree node into a Yoga node (and its subtree).
- * Does not run layout calculation; call computeLayout on the root afterward if needed.
- */
+//Converts tree node into Yoga node
 export function layoutNodeToYogaNode(node: LayoutNode): YogaNode {
   const yogaNode = Yoga.Node.createDefault();
   applyLayoutSpec(yogaNode, node.layout);
@@ -75,10 +98,7 @@ export function layoutNodeToYogaNode(node: LayoutNode): YogaNode {
   return yogaNode;
 }
 
-/**
- * Runs Yoga layout calculation on the root node (e.g. for given width/height).
- * Call after building the tree with layoutNodeToYogaNode.
- */
+//Run yoga layout engine
 export function computeLayout(
   rootYogaNode: YogaNode,
   width: number | "auto" = "auto",
@@ -87,10 +107,7 @@ export function computeLayout(
   rootYogaNode.calculateLayout(width, height);
 }
 
-/**
- * Walks layout tree and Yoga tree in sync, returning a map of layout node id → computed layout.
- * Call after computeLayout. Uses getComputedLayout() (left, top, width, height) per node.
- */
+//Extract yoga results
 export function getComputedLayoutMap(
   layoutNode: LayoutNode,
   yogaNode: YogaNode

@@ -11,6 +11,7 @@ import {
   getComputedLayoutMap,
 } from "./yogaAdapter";
 
+//Layout node > react mappings (nodeType must be represnted here also)
 const MUI_MAP: Record<LayoutNode["type"], React.ElementType> = {
   page: Box,
   section: Box,
@@ -36,15 +37,15 @@ function LayoutNodeView({ node, computedMap }: LayoutRendererProps): React.React
 
   const layoutSx = computed
     ? {
-      position: "absolute" as const,
-      left: computed.left,
-      top: computed.top,
-      width: computed.width,
-      height: computed.height,
-      boxSizing: "border-box" as const,
-      border: "1px solid",
-      borderColor: "divider",
-    }
+        position: "absolute" as const,
+        left: computed.left,
+        top: computed.top,
+        width: computed.width,
+        height: computed.height,
+        boxSizing: "border-box" as const,
+        border: "1px solid",
+        borderColor: "divider",
+      }
     : {};
 
   const childElements = children.map((child) => (
@@ -66,11 +67,13 @@ export function LayoutRenderer({ tree, computedMap }: LayoutRendererRootProps): 
   const rootComputed = computedMap[tree.id];
   const rootSx = rootComputed
     ? {
-        position: "relative" as const,
-        width: rootComputed.width,
-        height: rootComputed.height,
-        minHeight: "100vh",
-      }
+      position: "relative" as const,
+      width: rootComputed.width,
+      height: rootComputed.height,
+      minHeight: "100vh",
+      maxWidth: "100%",
+      maxHeight: "100%",
+    }
     : {};
 
   return (
@@ -145,7 +148,7 @@ function getViewportSize(): { width: number; height: number } {
 
 /**
  * Measures a container via ref, then runs the layout pipeline and renders.
- * Initial size is full viewport (100vw × 100vh); ResizeObserver keeps it in sync.
+ * Initial size is viewport (100vw × 100vh); ResizeObserver keeps it in sync.
  */
 export function LayoutViewWithRef({ tree }: LayoutViewWithRefProps): React.ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);

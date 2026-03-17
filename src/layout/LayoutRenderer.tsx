@@ -51,7 +51,7 @@ function LayoutNodeView({ node, computedMap }: LayoutRendererProps): React.React
       width: computed.width,
       height: computed.height,
       boxSizing: "border-box" as const,
-      //border: "1px solid",
+      border: "1px solid",
       borderColor: "divider",
     }
     : {};

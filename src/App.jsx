@@ -1,10 +1,9 @@
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { LayoutViewWithRef } from "./layout/LayoutRenderer";
 import { appShellLayout } from "./layout/templates/app-shell";
+import theme from "./theme";
 import "./App.css";
-
-const theme = createTheme();
 
 function App() {
   return (

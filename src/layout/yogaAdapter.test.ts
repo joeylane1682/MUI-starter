@@ -5,7 +5,7 @@ import {
   computeLayout,
   getComputedLayoutMap,
 } from "./yogaAdapter";
-import { dashboardLayout } from "./templates/dashboard";
+import { appShellLayout } from "./templates/app-shell";
 
 describe("yogaAdapter", () => {
   it("lays out a sidebar + content correctly", () => {
@@ -158,40 +158,36 @@ describe("yogaAdapter", () => {
     expect(map["b"].width).toBe(100);
   });
 
-  it("runs full pipeline on dashboardLayout and produces valid layout map", () => {
-    const rootYoga = layoutNodeToYogaNode(dashboardLayout);
+  it("runs full pipeline on appShellLayout and produces valid layout map", () => {
+    const rootYoga = layoutNodeToYogaNode(appShellLayout);
     computeLayout(rootYoga, 1024, 600);
-    const map = getComputedLayoutMap(dashboardLayout, rootYoga);
+    const map = getComputedLayoutMap(appShellLayout, rootYoga);
 
     const expectedIds = [
       "root",
-      "header",
-      "main",
-      "list-panel",
-      "list",
-      "list-item-1",
-      "list-item-2",
-      "list-item-3",
-      "list-item-4",
-      "list-item-5",
-      "detail-panel",
-      "detail-content",
+      "global-header",
+      "application-title-bar",
+      "main-content",
     ];
     expect(Object.keys(map).sort()).toEqual([...expectedIds].sort());
 
+    // root should match viewport
     expect(map["root"].width).toBe(1024);
     expect(map["root"].height).toBe(600);
 
-    expect(map["header"].height).toBe(64);
-    expect(map["header"].top).toBe(0);
+    // global header: fixed 64px at top
+    expect(map["global-header"].top).toBe(0);
+    expect(map["global-header"].height).toBe(64);
 
-    expect(map["list-panel"].width).toBe(320);
-    expect(map["list-panel"].left).toBe(0);
+    // title bar: directly below header, 48px tall
+    expect(map["application-title-bar"].top).toBe(64);
+    expect(map["application-title-bar"].height).toBe(48);
 
-    expect(map["detail-panel"].left).toBe(320);
-    expect(map["detail-panel"].width).toBe(1024 - 320);
-    expect(map["detail-panel"].height).toBeGreaterThan(0);
+    // main content: below title bar, fills remaining height
+    expect(map["main-content"].top).toBe(64 + 48);
+    expect(map["main-content"].height).toBeGreaterThan(0);
 
+    // all nodes should have non‑negative sizes
     for (const id of expectedIds) {
       expect(map[id].width).toBeGreaterThanOrEqual(0);
       expect(map[id].height).toBeGreaterThanOrEqual(0);

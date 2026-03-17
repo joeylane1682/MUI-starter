@@ -12,6 +12,8 @@ import {
   computeLayout,
   getComputedLayoutMap,
 } from "./yogaAdapter";
+import { GlobalHeader } from "./patterns/global-header";
+import { ApplicationTitleBar } from "./patterns/application-title-bar";
 
 //Layout node > react mappings (nodeType must be represnted here also)
 const MUI_MAP: Record<LayoutNode["type"], React.ElementType> = {
@@ -49,7 +51,7 @@ function LayoutNodeView({ node, computedMap }: LayoutRendererProps): React.React
       width: computed.width,
       height: computed.height,
       boxSizing: "border-box" as const,
-      border: "1px solid",
+      //border: "1px solid",
       borderColor: "divider",
     }
     : {};
@@ -57,6 +59,22 @@ function LayoutNodeView({ node, computedMap }: LayoutRendererProps): React.React
   const childElements = children.map((child) => (
     <LayoutNodeView key={child.id} node={child} computedMap={computedMap} />
   ));
+
+  if (node.id === "global-header") {
+    return (
+      <MuiComponent sx={layoutSx}>
+        <GlobalHeader />
+      </MuiComponent>
+    );
+  }
+
+  if (node.id === "application-title-bar") {
+    return (
+      <MuiComponent sx={layoutSx}>
+        <ApplicationTitleBar />
+      </MuiComponent>
+    );
+  }
 
   const componentType =
     node.props && typeof node.props.componentType === "string"

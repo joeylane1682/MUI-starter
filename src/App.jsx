@@ -1,8 +1,7 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { LayoutViewWithRef } from "./layout/LayoutRenderer";
-import { dashboardLayout } from "./layout/templates/dashboard";
-import { appShellLayout } from "./layout/templates/appShell";
+import { appShellLayout } from "./layout/templates/app-shell";
 import "./App.css";
 
 const theme = createTheme();

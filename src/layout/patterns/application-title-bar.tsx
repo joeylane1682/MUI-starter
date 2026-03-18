@@ -22,7 +22,7 @@ export function ApplicationTitleBar() {
       }}
     >
       {/* Left: title */}
-      <Typography variant="h6">
+      <Typography variant="h3">
         Application
       </Typography>
 

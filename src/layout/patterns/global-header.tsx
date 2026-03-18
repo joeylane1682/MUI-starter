@@ -20,7 +20,7 @@ export function GlobalHeader() {
           <IconButton edge="start" color="inherit">
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" color="inherit">
+          <Typography variant="h3" color="inherit">
             Evermont
           </Typography>
         </Box>
@@ -37,7 +37,7 @@ export function GlobalHeader() {
             <AppsIcon />
           </IconButton>
           <Avatar sx={{ ml: 1 }}>
-            J
+            AB
           </Avatar>
         </Box>
       </Toolbar>

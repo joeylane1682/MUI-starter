@@ -1,4 +1,19 @@
+---
+description: Component selection and usage restrictions for generated region UI
+globs: "{src/layout/**/*,src/pages/**/*,src/**/*.tsx,src/**/*.jsx}"
+alwaysApply: false
+---
+
 # Component Usage Contract
+
+## Component Source Constraint
+- MUST use components from `@mui/material` and approved icons from `@mui/icons-material`.
+- MUST NOT introduce third-party UI component libraries.
+- MUST NOT create custom UI primitives when an equivalent MUI component exists.
+- MAY use project-local pattern components only when they already exist in the codebase.
+- If no direct MUI equivalent exists, compose from allowed MUI primitives before creating new abstractions.
+
+---
 
 ## Selection Principle
 When multiple components satisfy usage:

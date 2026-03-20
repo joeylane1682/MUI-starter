@@ -1,0 +1,64 @@
+---
+description: Yoga runtime semantics, term definitions, and pipeline mapping
+globs: "{src/layout/**/*,src/pages/**/*}"
+alwaysApply: false
+---
+
+# Yoga Layout Runtime Contract
+
+## Purpose
+Provide canonical definitions for layout-engine runtime terms and map them to source files so AI can reason consistently about model, workflow, and execution boundaries.
+
+## Canonical Terms and File Anchors
+- `LayoutNode`:
+  - Defined in `src/layout/layoutTypes.ts`
+  - Tree unit used for template structure and region ownership.
+- `meta`:
+  - Defined in `src/layout/layoutTypes.ts`
+  - Runtime validation enforced in `src/layout/yogaAdapter.ts`
+  - Governs injectability and region mapping contract.
+- `layout` (`LayoutSpec`):
+  - Defined in `src/layout/layoutTypes.ts`
+  - Input style model consumed by Yoga translation logic in `src/layout/yogaAdapter.ts`.
+- `ComputedLayoutMap`:
+  - Produced in `src/layout/yogaAdapter.ts`
+  - Consumed by `src/layout/LayoutRenderer.tsx` for absolute positioning.
+- Template tree:
+  - Sourced from `src/layout/templates/`.
+
+## Runtime Pipeline (Authoritative)
+1. Template tree (`LayoutNode`) is selected from `src/layout/templates/`.
+2. Validation gate runs (`validateLayoutTree`) in `src/layout/yogaAdapter.ts`.
+3. Tree is translated to Yoga nodes (`layoutNodeToYogaNode`).
+4. Yoga computes geometry (`computeLayout`).
+5. Geometry is extracted (`getComputedLayoutMap`).
+6. Renderer resolves React output using computed map (`src/layout/LayoutRenderer.tsx`).
+7. Region content is mounted by `regionKey` for injectable nodes.
+
+## Validation Semantics
+- Every node must include `meta`.
+- `injectable: true` requires a non-empty `regionKey`.
+- `injectable: false` with `regionKey` is a warning.
+- Duplicate `regionKey` values are warnings.
+- For injectable nodes, `regionKey === id` is preferred (warning on mismatch).
+
+## Execution Boundaries
+Yoga runtime is responsible for geometry, not content semantics.
+
+AI MUST NOT:
+- Change Yoga adapter behavior unless task explicitly targets runtime semantics.
+- Mutate template-owned structure outside injectable regions.
+- Redefine `LayoutSpec` semantics when composing region content.
+
+AI MAY:
+- Compose content for injectable regions.
+- Use computed layout outputs for rendering and placement decisions.
+
+## Structural Invariants
+- Preserve tree ordering and parent-child relationships during translation.
+- Keep node identity stable (`id`) for mapping and computed output keys.
+- Keep region mapping contract stable via `regionKey`.
+
+## Test Anchors
+- Runtime and validation behavior are verified in `src/layout/yogaAdapter.test.ts`.
+- Any semantic change to adapter/validation should update corresponding tests.

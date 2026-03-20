@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
-import type { LayoutNode } from "./layoutTypes";
+import type { LayoutNode } from "../../src/layout/layoutTypes";
 import {
   layoutNodeToYogaNode,
   computeLayout,
   getComputedLayoutMap,
-} from "./yogaAdapter";
-import { appShellLayout } from "./templates/app-shell";
+} from "../../src/layout/yogaAdapter";
+import { applicationPageLayout } from "../../src/layout/templates/application-page";
 
 describe("yogaAdapter", () => {
   it("throws when a node is missing meta", () => {
@@ -336,10 +336,10 @@ describe("yogaAdapter", () => {
     expect(map["b"].width).toBe(100);
   });
 
-  it("runs full pipeline on appShellLayout and produces valid layout map", () => {
-    const rootYoga = layoutNodeToYogaNode(appShellLayout);
+  it("runs full pipeline on applicationPageLayout and produces valid layout map", () => {
+    const rootYoga = layoutNodeToYogaNode(applicationPageLayout);
     computeLayout(rootYoga, 1024, 600);
-    const map = getComputedLayoutMap(appShellLayout, rootYoga);
+    const map = getComputedLayoutMap(applicationPageLayout, rootYoga);
 
     const expectedIds = [
       "root",

@@ -1,0 +1,83 @@
+---
+description: Layout engine orchestration and governance contract
+alwaysApply: true
+---
+
+# Layout Engine Contract
+
+## Purpose
+Define the end-to-end layout engine process for AI interpretation and enforce governance over subordinate contracts.
+
+Governed contracts:
+- `/.cursor/rules/yoga-layout-runtime.mdc`
+- `/.cursor/rules/component-usage.mdc`
+- `/.cursor/rules/layout-heuristics.mdc`
+
+This rule controls process and scope. Subordinate rules control runtime semantics and local decisions inside composition.
+
+## Runtime Context Prerequisite
+Before executing workflow steps, AI MUST first apply `/.cursor/rules/yoga-layout-runtime.mdc` to resolve canonical term meanings (`LayoutNode`, `meta`, `layout`, `regionKey`) and runtime pipeline boundaries.
+
+## Required Inputs
+- A valid template (`LayoutNode` tree)
+- Node metadata on every node: `meta.injectable: boolean`
+- `regionKey` for each injectable node
+- User prompt + intent constraints
+
+## Project Anchors
+- Template library: `src/layout/templates/`
+- Reusable layout patterns: `src/layout/patterns/`
+- Page composition outputs: `src/pages/`
+- Region-level UI outputs: `src/pages/regions/`
+
+## Authoritative Workflow
+1. Read `/.cursor/rules/yoga-layout-runtime.mdc` first, then read this contract and remaining governed contracts.
+2. Interpret user prompt and extract design intent.
+3. Select the most appropriate template from `src/layout/templates/`.
+4. Validate template metadata before generation:
+   - throw: missing `meta`
+   - throw: `injectable: true` without non-empty `regionKey`
+   - warn: `injectable: false` with `regionKey`
+   - warn: duplicate `regionKey` values
+   - warn: injectable `regionKey !== id` (prefer equality)
+5. Identify injectable regions only (`meta.injectable === true`).
+6. For each injectable region:
+   - Prefer an existing pattern from `src/layout/patterns/` first.
+   - If no pattern applies, compose with allowed layout primitives and approved React/MUI components.
+   - Apply `layout-heuristics` for spatial/composition decisions.
+   - Apply `component-usage` for component correctness and restrictions.
+7. Build region output map by `regionKey` (do not mutate template structure).
+8. Persist generated page/region artifacts only when explicitly requested; when persisted, write to `src/pages/` and `src/pages/regions/`.
+9. Pass template tree to Yoga adapter for layout computation.
+10. Render computed layout and mount region content by `regionKey`.
+11. Return final React/MUI page output.
+
+## Mandatory Governance
+- AI MUST apply all governed contracts whenever composing UI for injectable regions.
+- AI MUST treat this file as process/scope authority; subordinate contracts are decision authorities.
+
+## Structural Invariants
+AI MUST NOT:
+- Modify non-injectable node structure or children.
+- Override template-owned page scaffolding.
+- Override Yoga behavior or `LayoutSpec` model.
+
+AI MAY:
+- Compose UI only inside injectable regions.
+- Select patterns/components within governed contracts.
+
+## Naming and Mapping Contract
+- Use `kebab-case` for `id` and `regionKey`.
+- Default: for injectable nodes, `regionKey` should equal `id`.
+- Region mapping key is `regionKey`, not component filename.
+
+## Persistence Policy
+- Default behavior: do not create new template files per prompt.
+- Persist generated page artifacts only when explicitly requested.
+
+## Conflict Resolution
+When rules conflict:
+1. This rule (process/scope) wins.
+2. `yoga-layout-runtime` governs runtime term semantics and pipeline behavior.
+3. `layout-heuristics` governs layout composition decisions.
+4. `component-usage` governs component-level choices.

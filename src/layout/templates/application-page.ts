@@ -1,8 +1,8 @@
-// AppShell blueprint: global header, page title bar, main content (full viewport width)
+// ApplicationPage blueprint: global header, page title bar, main content (full viewport width)
 
 import type { LayoutNode } from "../layoutTypes";
 
-export const appShellLayout: LayoutNode = {
+export const applicationPageLayout: LayoutNode = {
   id: "root",
   type: "page",
   meta: {

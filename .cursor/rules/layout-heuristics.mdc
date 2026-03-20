@@ -1,3 +1,9 @@
+---
+description: Region-level layout composition heuristics and primitive constraints
+globs: "{src/layout/**/*,src/pages/**/*,src/**/*.tsx,src/**/*.jsx}"
+alwaysApply: false
+---
+
 # Layout Heuristic Contract
 
 ## 0. Allowed Primitives (Constraint)
@@ -69,7 +75,7 @@ Purpose:
 ---
 
 ## Scope
-This contract applies ONLY to AI-generated UI within predefined layout regions (e.g. main-content).
+This contract applies ONLY to AI-generated UI within predefined injectable layout regions.
 
 It does NOT:
 - Override templates (page structure)

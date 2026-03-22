@@ -140,8 +140,45 @@ const theme = createTheme({
 
   components: {
     MuiButtonBase: {
-      defaultProps: {
-        disableRipple: true,
+      defaultProps: { disableRipple: true },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          letterSpacing: 'normal',
+        },
+      },
+    },
+    MuiStack: {
+      styleOverrides: {
+        root: {
+          width: '100%',
+          boxSizing: 'border-box',
+        },
+      },
+    },
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          width: '100%',
+          boxSizing: 'border-box',
+        },
+      },
+    },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          width: '100%',
+          boxSizing: 'border-box',
+        },
+      },
+    },
+    MuiBox: {
+      styleOverrides: {
+        root: {
+          width: '100%',
+          boxSizing: 'border-box',
+        },
       },
     },
   },

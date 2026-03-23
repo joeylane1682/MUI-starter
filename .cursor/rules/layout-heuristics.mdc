@@ -13,10 +13,6 @@ Allowed:
 - container
 - component
 
-Disallowed:
-- page
-- section (unless explicitly permitted by template)
-
 Purpose:
 - Support consistent layout decisions across pages
 - Keep composition simple and readable

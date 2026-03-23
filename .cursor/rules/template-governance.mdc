@@ -19,7 +19,7 @@ This contract governs workflow and boundaries, not visual layout heuristics.
 ## Editing Boundaries (Hard Constraint)
 
 AI MUST:
-- Start from an existing template under `src/layout/templates/`.
+- Start each page from an existing template under `src/layout/templates/`.
 - Build page output in `src/pages/`.
 - Preserve locked template regions/components exactly as authored.
 
@@ -56,7 +56,3 @@ AI MUST NOT:
 Applies to AI-authored page generation and edits in:
 - `src/pages/`
 - template sources in `src/layout/templates/` (as reference/locked scaffolding)
-
-This contract does NOT:
-- Define visual spacing, hierarchy, or layout style decisions
-- Override component-level usage rules

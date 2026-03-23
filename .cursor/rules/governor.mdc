@@ -1,0 +1,22 @@
+---
+description: Governance orchestrator for page-generation guidance
+globs: "{src/pages/**/*,src/layout/templates/**/*,src/**/*.tsx,src/**/*.jsx}"
+alwaysApply: true
+---
+
+# Governor Contract
+
+## Role
+This file only governs rule/skill activation and precedence.
+It does not define workflow or implementation behavior.
+
+## Activation Map
+- Use `.cursor/skills/create-page/SKILL.md` for page creation/update workflow.
+- Use `.cursor/rules/component-usage.mdc` for component selection/usage guidance.
+- Use `.cursor/rules/layout-heuristics.mdc` for layout/composition guidance.
+
+## Precedence
+If guidance conflicts, resolve in this order:
+1. This governor file
+2. Referenced rules (`component-usage`, `layout-heuristics`)
+3. Referenced skill (`create-page`)

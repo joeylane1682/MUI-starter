@@ -30,6 +30,13 @@ AI MUST NOT:
 
 ---
 
+## Locked Marker Rule
+
+Any JSX node marked with `data-region-lock="locked"` is uneditable by default.
+AI MUST NOT modify, remove, replace, or reorder locked nodes unless the user explicitly requests it.
+
+---
+
 ## Page Derivation Rules
 
 AI MUST:

@@ -6,8 +6,10 @@ import { ApplicationTitleBar } from "../patterns/application-title-bar";
 export function ApplicationPage() {
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <GlobalHeader />
-      <Box sx={{ height: 48, borderBottom: 1, borderColor: "divider" }}>
+      <Box data-region-lock="locked">
+        <GlobalHeader />
+      </Box>
+      <Box data-region-lock="locked" sx={{ height: 48, borderBottom: 1, borderColor: "divider" }}>
         <ApplicationTitleBar />
       </Box>
       <Box sx={{ p: 3, flexGrow: 1 }}>

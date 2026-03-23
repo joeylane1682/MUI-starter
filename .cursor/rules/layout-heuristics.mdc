@@ -1,12 +1,12 @@
 ---
-description: Region-level layout composition heuristics and primitive constraints
+description: Design-only layout composition heuristics
 globs: "{src/layout/**/*,src/pages/**/*,src/**/*.tsx,src/**/*.jsx}"
 alwaysApply: false
 ---
 
 # Layout Heuristic Contract
 
-## 0. Allowed Primitives (Constraint)
+## 0. Allowed Primitives
 Allowed:
 - stack
 - grid
@@ -18,8 +18,8 @@ Disallowed:
 - section (unless explicitly permitted by template)
 
 Purpose:
-- Prevent structural drift
-- Keep AI scoped to region-level composition
+- Support consistent layout decisions across pages
+- Keep composition simple and readable
 
 ---
 
@@ -75,11 +75,16 @@ Purpose:
 ---
 
 ## Scope
-This contract applies ONLY to AI-generated UI within predefined injectable layout regions.
+This contract applies only to visual/layout composition decisions:
+- spacing
+- hierarchy
+- grouping
+- responsiveness
+- readability/accessibility at layout level
 
 It does NOT:
-- Override templates (page structure)
-- Override pattern definitions
-- Modify Yoga layout behavior
+- define edit permissions or locked regions
+- define template-selection workflow
+- define component source policy
 
-Heuristics guide composition, not layout structure.
+Heuristics guide design decisions, not workflow governance.
